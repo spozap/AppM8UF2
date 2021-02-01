@@ -1,9 +1,13 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify , render_template
 
 app = Flask(__name__)
+
+@app.errorhandler(404)
+def not_found(e):
+	return '<h1>La página especificada no existe</h1>'
 @app.route('/')
 def hello_world():
-	return jsonify({'name': 'Calculadora'})
+	return render_template('index.html')
 @app.route('/suma/<op1>/<op2>')
 def suma(op1, op2):
 	n_op1 = float(op1)
