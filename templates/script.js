@@ -7,6 +7,7 @@ let inputValores = document.querySelector(".input-valores");
 
 let botonIgual = document.querySelector(".boton-enviar");
 
+
 /* RECOGEMOS VALOR DE CADA BOTTOM */
 for (let index = 0; index < botones.length; index++) {
     
@@ -17,6 +18,7 @@ for (let index = 0; index < botones.length; index++) {
     
 }
 
+
 /* FUNCION PARA LIMPIAR EL TABLERO DE RESULTADOS */
 let limpiarTablero = () =>{
 
@@ -24,111 +26,161 @@ let limpiarTablero = () =>{
 }
 botonLimpiar.addEventListener("click", limpiarTablero, true);
 
+
 /* VALIDACION DE CAMPOS PARA ACEPTAR SOLO NUMEROS Y CARACTER OPERACION */
 let validacionInput = () =>{
 
-    let numeroCompleto = inputValores.value.split("");
 
-    var numero1 = "";
+    let numeroCompleto = inputValores.value;
 
-    var numero2 = "";
+    let num1 = "";
 
-    var operando = "";
+    let operando = "";
 
-    var validacion = false;
+    let num2 = "";
 
-    for (let index = 0; index < numeroCompleto.length; index++) {
+    let valoresValidados = false;
 
-        switch (numeroCompleto[index]) {
-            case "+":
-                numeroCompleto[index].split("+"); 
+    for (let i = 0; i < numeroCompleto.length; i++) {
 
-                numero1 = numeroCompleto[0]; 
-
-                operando = numeroCompleto[1]; 
-
-                numero2 = numeroCompleto[2]; 
-
-                validacion = true;
-
-                break;
-        
-            case "-":
-                numeroCompleto[index].split("-");
+        if (numeroCompleto.charAt(i) == "+") {
             
-                numero1 = numeroCompleto[0]; 
+            let numeros = numeroCompleto.split("+");
 
-                operando = numeroCompleto[1]; 
+            num1 = numeros[0];
 
-                numero2 = numeroCompleto[2]; 
+            operando = "suma";
 
-                validacion = true;
+            num2 = numeros[1];
 
-                break;
-
-            case "*":
-                numeroCompleto[index].split("*");
-
-                numero1 = numeroCompleto[0]; 
-
-                operando = numeroCompleto[1]; 
-
-                numero2 = numeroCompleto[2]; 
-
-                validacion = true;
-
-                break;
-
-            case "/":
-                numeroCompleto[index].split("/");
-
-                numero1 = numeroCompleto[0]; 
-
-                operando = numeroCompleto[1]; 
-
-                numero2 = numeroCompleto[2]; 
-
-                validacion = true;
-
-                break;
+            valoresValidados = true;
+                    
         }
 
+        if (numeroCompleto.charAt(i) == "-") {
+            
+            let numeros = numeroCompleto.split("-");
+
+            num1 = numeros[0];
+
+            operando = "resta";
+
+            num2 = numeros[1];
+
+            valoresValidados = true;
+                    
+        }
+
+        if (numeroCompleto.charAt(i) == "*") {
+            
+            let numeros = numeroCompleto.split("*");
+
+            num1 = numeros[0];
+
+            operando = "multiplicacio";
+
+            num2 = numeros[1];
+
+            valoresValidados = true;
+                    
+        }
+
+        if (numeroCompleto.charAt(i) == "/") {
+            
+            let numeros = numeroCompleto.split("/");
+
+            num1 = numeros[0];
+
+            operando = "divisio";
+
+            num2 = numeros[1];
+
+            valoresValidados = true;
+                    
+        }
+        
     }
 
-    /* SI ES CORRECTO ENVIA UN ARRAY LLENO SI NO ENVIA CERO */
-    if (validacion) {
+    if (valoresValidados) {
         
-        var objetoValores = [numero1,operando,numero2];
+        var objetoValores = [num1,operando,num2];
 
     }else{
 
         var objetoValores = "";
     }
-
+    
     return objetoValores;
 
 }
 
 
-/* VERIFICAMOS SI VIENE O NO CORRECTO ANTES DE HACER EL XHTTPREQUEST */
+/* VERIFICAMOS SI VIENE O NO CORRECTO ANTES DE HACER EL XMLHTTPREQUEST */
 botonIgual.addEventListener("click", () =>{
     
     let validados = validacionInput();
 
+    console.log(validados);
+
     if (validados) {
 
-        console.log("verda "+validados[2]);
+        let numero1 = parseInt(validados[0]);
 
-        /* aqui llamamos al metodo XHTMREQUEST */
+        let numero2 = parseInt(validados[2]);
 
-        limpiarTablero();
+        if (!isNaN(numero1)) {
 
+            if (!isNaN(numero2)) {
+                
+                envioAjax(numero1,validados[1],numero2);
+
+            }else{
+                alert("el numero 2 no es correcto")
+            }  
+        }else{
+            alert("el numero 1 no es correcto");
+        }
+
+        
     }else{
-
-        alert("los datos son erroneos");
-
-        limpiarTablero();
+        alert("datos erroneos");
     }
 
 });
+
+/* FUNCION CON LA QUE ENVIAMOS LA PETICION POR MEDIO DE AJAX */
+const envioAjax = (num1, operador, num2) =>{
+
+    console.log(num1,operador,num2);
+
+    /* AQUI IRIA LA URL REAL DE LA API */
+    /* let url = "http://localhost/AppM8UF2/recibir.php/"+num1+"/"+operador+"/"+num2; */
+
+    /* URL TEST BORRAR AL OBTENER URL REAL */
+    let url = "../text.json"
+
+    var xhttp = new XMLHttpRequest();
+
+    xhttp.onreadystatechange = function(){
+
+        if (this.status == 200 && this.status == 200) {
+
+            limpiarTablero();
+
+            let respuesta = JSON.parse(this.responseText);
+
+            /* AQUI SOLO MOSTRAMOS DEL OBJETO LA PROPIEDAD RESULTADO QUE DEVUELVE EL JSON */
+            inputValores.value = respuesta.resultado;
+
+            validacionInput();
+            
+        }
+
+    }
+
+    xhttp.open("GET", url, true);
+
+    xhttp.send();
+
+}
 
