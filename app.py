@@ -1,10 +1,12 @@
 from flask import Flask, jsonify , render_template , request
-from flask_login import LoginManager
+from flask_login import LoginManager, login_required , login_manager
 
 app = Flask(__name__)
 
+app.secret_key = 'daw2m8'
+
 login_manager = LoginManager()
-login_manager.login_view = 'index.html'
+login_manager.login_view = 'login_post'
 login_manager.init_app(app)
 
 @login_manager.user_loader
@@ -22,10 +24,16 @@ def login_redirect():
 @app.route('/login', methods=['POST'])
 def login_post():
 	if request.form.get('username') == "username" and request.form.get('password') == "password":
-		return "OK"
+		return render_template('calculadora.html')
 	return "NO OK"
 
+@app.route('/calculadora')
+@login_required
+def calculadora():
+	return render_template('calculadora.html')
+
 @app.route('/suma/<op1>/<op2>')
+@login_required
 def suma(op1, op2):
 	n_op1 = float(op1)
 	n_op2 = float(op2)
@@ -33,6 +41,7 @@ def suma(op1, op2):
 	return jsonify(resultat), 200
 
 @app.route('/resta/<op1>/<op2>')
+@login_required
 def resta(op1, op2):
 	n_op1 = float(op1)
 	n_op2 = float(op2)
@@ -40,6 +49,7 @@ def resta(op1, op2):
 	return jsonify(resultat), 200
 
 @app.route('/multiplicacio/<op1>/<op2>')
+@login_required
 def multiplicacio(op1, op2):
 	n_op1 = float(op1)
 	n_op2 = float(op2)
