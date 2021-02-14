@@ -1,34 +1,39 @@
 from flask import Flask, jsonify , render_template , request
-from flask_httpauth import HTTPBasicAuth
-from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import LoginManager, login_required , login_manager
 
 app = Flask(__name__)
-auth = HTTPBasicAuth()
 
-users = {
-    "jorge": generate_password_hash("1234"),
-    "sergi": generate_password_hash("4321")
-}
+app.secret_key = 'daw2m8'
 
-@auth.verify_password
-def verify_password(username, password):
-    if username in users and \
-            check_password_hash(users.get(username), password):
-        return username
+login_manager = LoginManager()
+login_manager.login_view = 'login_post'
+login_manager.init_app(app)
 
-@app.route('/')
-@auth.login_required
-def index():
-    return "Bienvenido, {}!".format(auth.current_user())
+@login_manager.user_loader
+def load_user(user_id):
+	return null
 
+@app.errorhandler(404)
+def not_found(e):
+	return '<h1>La página especificada no existe</h1>'
+
+@app.route('/login', methods=['GET'])
+def login_redirect():
+	return render_template('index.html')
+
+@app.route('/login', methods=['POST'])
+def login_post():
+	if request.form.get('username') == "username" and request.form.get('password') == "password":
+		return render_template('calculadora.html')
+	return "NO OK"
 
 @app.route('/calculadora')
-@auth.login_required
+@login_required
 def calculadora():
 	return render_template('calculadora.html')
 
 @app.route('/suma/<op1>/<op2>')
-@auth.login_required
+@login_required
 def suma(op1, op2):
 	n_op1 = float(op1)
 	n_op2 = float(op2)
@@ -36,7 +41,7 @@ def suma(op1, op2):
 	return jsonify(resultat), 200
 
 @app.route('/resta/<op1>/<op2>')
-@auth.login_required
+@login_required
 def resta(op1, op2):
 	n_op1 = float(op1)
 	n_op2 = float(op2)
@@ -44,7 +49,7 @@ def resta(op1, op2):
 	return jsonify(resultat), 200
 
 @app.route('/multiplicacio/<op1>/<op2>')
-@auth.login_required
+@login_required
 def multiplicacio(op1, op2):
 	n_op1 = float(op1)
 	n_op2 = float(op2)
@@ -52,7 +57,6 @@ def multiplicacio(op1, op2):
 	return jsonify(resultat), 200
 
 @app.route('/divisio/<op1>/<op2>')
-@auth.login_required
 def divisio(op1, op2):
 	n_op1 = float(op1)
 	n_op2 = float(op2)
