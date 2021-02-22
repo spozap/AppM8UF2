@@ -154,10 +154,10 @@ const envioAjax = (num1, operador, num2) =>{
     console.log(num1,operador,num2);
 
     /* AQUI IRIA LA URL REAL DE LA API */
-    /* let url = "http://localhost/AppM8UF2/recibir.php/"+num1+"/"+operador+"/"+num2; */
+     let url = "http://localhost/"+operador+"/"+num1+"/"+num2;
 
     /* URL TEST BORRAR AL OBTENER URL REAL */
-    let url = "../text.json"
+    //let url = "http"
 
     var xhttp = new XMLHttpRequest();
 
@@ -168,9 +168,10 @@ const envioAjax = (num1, operador, num2) =>{
             limpiarTablero();
 
             let respuesta = JSON.parse(this.responseText);
-
+	    console.log(JSON.stringify(respuesta))
+	    
             /* AQUI SOLO MOSTRAMOS DEL OBJETO LA PROPIEDAD RESULTADO QUE DEVUELVE EL JSON */
-            inputValores.value = respuesta.resultado;
+            inputValores.value = respuesta.resultat;
 
             validacionInput();
             

@@ -1,8 +1,9 @@
+
 from flask import Flask, jsonify , render_template , request
 from flask_httpauth import HTTPBasicAuth
 from werkzeug.security import generate_password_hash, check_password_hash
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='../templates', static_folder='../static')
 auth = HTTPBasicAuth()
 
 users = {
@@ -13,7 +14,7 @@ users = {
 @auth.verify_password
 def verify_password(username, password):
     if username in users and \
-            check_password_hash(users.get(username), password):
+           check_password_hash(users.get(username), password):
         return username
 
 @app.route('/')
